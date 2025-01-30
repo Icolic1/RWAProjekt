@@ -1,0 +1,62 @@
+﻿@model CulturalHeritageMVC.ViewModels.HeritageAddViewModel
+
+<h2>Add Heritage</h2>
+
+<form method="post">
+    <div class="mb-3">
+        <label for="name" class="form-label">Name:</label>
+        <input type="text" id="name" name="Name" class="form-control" value="@Model?.Name" required />
+        <span asp-validation-for="Name" class="text-danger"></span> <!-- Prikaz greske za Name -->
+    </div>
+    <div class="mb-3">
+        <label for="description" class="form-label">Description:</label>
+        <textarea id="description" name="Description" class="form-control" required>@Model?.Description</textarea>
+        <span asp-validation-for="Description" class="text-danger"></span> <!-- Prikaz greske za Description -->
+    </div>
+    <div class="mb-3">
+        <label for="location" class="form-label">Location:</label>
+        <input type="text" id="location" name="Location" class="form-control" value="@Model?.Location" required />
+        <span asp-validation-for="Location" class="text-danger"></span> <!-- Prikaz greske za Location -->
+    </div>
+    <div class="mb-3">
+        <label for="year" class="form-label">Year:</label>
+        <input type="number" id="year" name="Year" class="form-control" value="@Model?.Year" required />
+        <span asp-validation-for="Year" class="text-danger"></span> <!-- Prikaz greske za Year -->
+    </div>
+    <div class="mb-3">
+        <label for="nationalMinorityId" class="form-label">National Minority:</label>
+        @if (Model.NationalMinorities != null && Model.NationalMinorities.Any())
+        {
+            <select id="nationalMinorityId" name="NationalMinorityId" class="form-select" required>
+                <option value="" disabled selected>-- Select a National Minority --</option>
+                @foreach (var minority in Model.NationalMinorities)
+                {
+                    var isSelected = Model.NationalMinorityId == int.Parse(minority.Value) ? "selected" : "";
+                    <option value="@minority.Value" isSelected>@minority.Text</option>
+                }
+            </select>
+        }
+        else
+        {
+            <p class="text-danger">No national minorities available. Please add one before creating a heritage.</p>
+        }
+        <span asp-validation-for="NationalMinorityId" class="text-danger"></span> <!-- Prikaz greske za National Minority -->
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+@section Scripts {
+    <!-- Dodavanje validacije s jQuery-jem -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.0/jquery.validate.unobtrusive.min.js"></script>
+}
+
+
+
+
+
+
+
+
+

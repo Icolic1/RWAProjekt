@@ -1,0 +1,33 @@
+﻿@model CulturalHeritageMVC.ViewModels.HeritageThemeViewModel
+
+<h2>Edit Heritage Theme</h2>
+
+<form method="post">
+    <input type="hidden" name="HeritageId" value="@Model.HeritageId" />
+    <input type="hidden" name="ThemeId" value="@Model.ThemeId" />
+
+    <div class="mb-3">
+        <label for="heritageId" class="form-label">Heritage</label>
+        <select id="heritageId" name="HeritageId" class="form-select" required>
+            @foreach (var heritage in Model.Heritages)
+            {
+                var isSelected = Model.HeritageId.ToString() == heritage.Value ? "selected" : "";
+                <option value="@heritage.Value" isSelected>@heritage.Text</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="themeId" class="form-label">Theme</label>
+        <select id="themeId" name="ThemeId" class="form-select" required>
+            @foreach (var theme in Model.Themes)
+            {
+                var isSelected = Model.ThemeId.ToString() == theme.Value ? "selected" : "";
+                <option value="@theme.Value" isSelected>@theme.Text</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+

@@ -1,0 +1,23 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+</head>
+<body>
+    <div class="container text-center mt-5">
+        <h1 class="display-4">Welcome to the Cultural Heritage Management System</h1>
+        <p class="lead">Discover and manage heritage sites of national minorities.</p>
+        <a asp-controller="Auth" asp-action="Login" class="btn btn-primary btn-lg mt-3">
+            Login
+        </a>
+    </div>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

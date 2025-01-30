@@ -1,0 +1,187 @@
+﻿@model CulturalHeritageMVC.ViewModels.HeritageFilterAndPagingViewModel
+
+<h2>Heritages</h2>
+
+<div class="d-flex justify-content-end mb-3">
+    <a asp-controller="Heritage" asp-action="Add" class="btn btn-success">Add New Heritage</a>
+</div>
+
+<!-- Search and filter -->
+<form method="get" class="mb-3">
+    <div class="d-flex align-items-center">
+        <input type="text" name="search" value="@Model.Search" class="form-control w-50 me-2" placeholder="Search..." />
+        <select id="nationalMinorityId" name="NationalMinorityId" class="form-select">
+            <option value="">-- Select a National Minority --</option>
+            @foreach (var minority in Model.NationalMinorities)
+            {
+                var isSelected = Model.NationalMinorityId == int.Parse(minority.Value) ? "selected" : "";
+                <option value="@minority.Value" isSelected>@minority.Text</option>
+            }
+        </select>
+        <button type="submit" class="btn btn-primary ms-2">Search</button>
+    </div>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Location</th>
+            <th>Year</th>
+            <th>National Minority</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var heritage in Model.Heritages)
+        {
+            <tr>
+                <td>@heritage.Name</td>
+                <td>@heritage.Description</td>
+                <td>@heritage.Location</td>
+                <td>@heritage.Year</td>
+                <td>@heritage.NationalMinorityName</td>
+                <td>
+                    <a asp-controller="Heritage" asp-action="Edit" asp-route-id="@heritage.Id" class="btn btn-warning btn-sm">Edit</a>
+                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addCommentModal-@heritage.Id">
+                        Add Comment
+                    </button>
+                    <form method="post" asp-controller="Heritage" asp-action="Delete" asp-route-id="@heritage.Id" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+            </tr>
+
+            <!-- Comments Section -->
+            <tr>
+                <td colspan="6">
+                    <div class="accordion" id="commentsAccordion-@heritage.Id">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading-@heritage.Id">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@heritage.Id" aria-expanded="false" aria-controls="collapse-@heritage.Id">
+                                    View Comments (<span id="commentCount-@heritage.Id">@heritage.Comments.Count</span>)
+                                </button>
+                            </h2>
+                            <div id="collapse-@heritage.Id" class="accordion-collapse collapse" aria-labelledby="heading-@heritage.Id" data-bs-parent="#commentsAccordion-@heritage.Id">
+                                <div class="accordion-body">
+                                    <ul class="list-group" id="commentsList-@heritage.Id">
+                                        @foreach (var comment in heritage.Comments)
+                                        {
+                                            <li class="list-group-item">
+                                                <strong>@comment.Username</strong> - @comment.CreatedAt.ToString("yyyy-MM-dd HH:mm")
+                                                <br />
+                                                @comment.Comment
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Modal za dodavanje komentara -->
+            <div class="modal fade" id="addCommentModal-@heritage.Id" tabindex="-1" aria-labelledby="addCommentModalLabel-@heritage.Id" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addCommentModalLabel-@heritage.Id">Add Comment for @heritage.Name</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="addCommentForm" data-heritage-id="@heritage.Id">
+                                <input type="hidden" name="HeritageId" value="@heritage.Id" />
+                                <div class="mb-3">
+                                    <label class="form-label">Your Comment</label>
+                                    <textarea class="form-control" name="Comment" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-success">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </tbody>
+</table>
+<!-- Paging -->
+@if (Model.TotalPages > 1)
+{
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <!-- Prethodna stranica -->
+            @if (Model.CurrentPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-action="List"
+                       asp-route-page="@(Model.CurrentPage - 1)"
+                       asp-route-search="@Model.Search"
+                       asp-route-NationalMinorityId="@Model.NationalMinorityId">
+                        Previous
+                    </a>
+                </li>
+            }
+
+            <!-- Brojevi stranica -->
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                    <a class="page-link" asp-action="List"
+                       asp-route-page="@i"
+                       asp-route-search="@Model.Search"
+                       asp-route-NationalMinorityId="@Model.NationalMinorityId">
+                        @i
+                    </a>
+                </li>
+            }
+
+            <!-- Sledeća stranica -->
+            @if (Model.CurrentPage < Model.TotalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-action="List"
+                       asp-route-page="@(Model.CurrentPage + 1)"
+                       asp-route-search="@Model.Search"
+                       asp-route-NationalMinorityId="@Model.NationalMinorityId">
+                        Next
+                    </a>
+                </li>
+            }
+        </ul>
+    </nav>
+}
+
+
+<!-- jQuery AJAX Script -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".addCommentForm").submit(function (event) {
+            event.preventDefault();
+            var form = $(this);
+            var heritageId = form.data("heritage-id");
+
+            $.ajax({
+                type: "POST",
+                url: "/Heritage/AddComment",
+                data: form.serialize(),
+                success: function (response) {
+                    $("#commentsList-" + heritageId).append(`
+                        <li class="list-group-item">
+                            <strong>` + response.username + `</strong> - ` + response.createdAt + `<br />
+                            ` + response.comment + `
+                        </li>
+                    `);
+
+                    var commentCount = parseInt($("#commentCount-" + heritageId).text()) + 1;
+                    $("#commentCount-" + heritageId).text(commentCount);
+
+                    form[0].reset();
+                    $("#addCommentModal-" + heritageId).modal("hide");
+                }
+            });
+        });
+    });
+</script>

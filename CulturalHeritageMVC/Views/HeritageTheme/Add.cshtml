@@ -1,0 +1,28 @@
+﻿@model CulturalHeritageMVC.ViewModels.HeritageThemeViewModel
+
+<h2>Add Heritage Theme</h2>
+
+<form method="post" asp-action="Add">
+    <div class="mb-3">
+        <label for="heritageId" class="form-label">Heritage</label>
+        <select id="heritageId" name="HeritageId" class="form-select" required>
+            <option value="" disabled selected>-- Select a Heritage --</option>
+            @foreach (var heritage in Model.Heritages)
+            {
+                    <option value="@heritage.Value">@heritage.Text</option>
+            }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="themeId" class="form-label">Theme</label>
+        <select id="themeId" name="ThemeId" class="form-select" required>
+            <option value="" disabled selected>-- Select a Theme --</option>
+            @foreach (var theme in Model.Themes)
+            {
+                    <option value="@theme.Value">@theme.Text</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="List" class="btn btn-secondary">Cancel</a>
+</form>

@@ -1,0 +1,31 @@
+﻿@model IEnumerable<WebAPI.Models.HeritageTheme>
+
+<h2>Heritage Themes</h2>
+
+<a href="/HeritageTheme/Add" class="btn btn-success mb-3">Add Heritage Theme</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Heritage</th>
+            <th>Theme</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ht in Model)
+        {
+            <tr>
+                <td>@ht.Heritage.Name</td>
+                <td>@ht.Theme.Name</td>
+                <td>
+                    <form method="post" action="/HeritageTheme/Delete">
+                        <input type="hidden" name="heritageId" value="@ht.HeritageId" />
+                        <input type="hidden" name="themeId" value="@ht.ThemeId" />
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
