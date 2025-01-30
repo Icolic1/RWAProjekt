@@ -8,7 +8,7 @@ namespace WebAPI.Models
         [Required]
         public string? Name { get; set; }
 
-        // Navigation properties
+        // nav svojstva
         public ICollection<Heritage>? Heritages { get; set; }
     }
 }

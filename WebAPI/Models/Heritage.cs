@@ -27,9 +27,9 @@ namespace WebAPI.Models
         [Required(ErrorMessage = "National Minority is required.")]
         [Display(Name = "National Minority")]
         public int NationalMinorityId { get; set; }
-        // Navigation properties
-        public NationalMinority? NationalMinority { get; set; }
-        public ICollection<HeritageTheme>? HeritageTheme{ get; set; }
+        // nav svojstva
+        public NationalMinority NationalMinority { get; set; } = null!;
+        public ICollection<HeritageTheme> HeritageTheme{ get; set; } = new List<HeritageTheme>();
         public ICollection<UserHeritageComment>? UserHeritageComment { get; set; } = new List<UserHeritageComment>();
     }
     

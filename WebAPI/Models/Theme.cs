@@ -3,9 +3,9 @@
     public class Theme
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
-        // Navigation properties
-        public ICollection<HeritageTheme> HeritageThemes { get; set; }
+        // nav svojstva 
+        public ICollection<HeritageTheme> HeritageThemes { get; set; } = new List<HeritageTheme>();
     }
 }

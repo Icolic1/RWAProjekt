@@ -15,24 +15,24 @@ namespace WebAPI.Data
         public DbSet<Theme> Theme { get; set; }
         public DbSet<HeritageTheme> HeritageTheme { get; set; }
         public DbSet<User> User { get; set; }
-        public DbSet<Image> Images { get; set; }
+       
         public DbSet<UserHeritageComment> UserHeritageComment { get; set; }
         public DbSet<Log> Log { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>().ToTable("User"); // Ovdje specificirate pravi naziv tablice
+            modelBuilder.Entity<User>().ToTable("User"); // treba specificirat iz nekog razloga??
             modelBuilder.Entity<Heritage>()
                 .HasMany(h => h.HeritageTheme)
                 .WithOne(ht => ht.Heritage)
                 .HasForeignKey(ht => ht.HeritageId)
-                .OnDelete(DeleteBehavior.Cascade); // Kaskadno brisanje za HeritageThemes
+                .OnDelete(DeleteBehavior.Cascade); // ksakadno brisanje za HeritageThemes
 
             modelBuilder.Entity<Heritage>()
                 .HasMany(h => h.UserHeritageComment)
                 .WithOne(uhc => uhc.Heritage)
                 .HasForeignKey(uhc => uhc.HeritageId)
-                .OnDelete(DeleteBehavior.Cascade); // Kaskadno brisanje za UserHeritageComments
+                .OnDelete(DeleteBehavior.Cascade); // kaskadno brisanje za UserHeritageComments
 
 
             // Configure composite key for HeritageTheme (M:N bridge table)

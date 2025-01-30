@@ -6,9 +6,9 @@ namespace WebAPI.Models
     public class HeritageTheme
     {
         public int HeritageId { get; set; }
-        public Heritage Heritage { get; set; }
+        public Heritage Heritage { get; set; } = null!;
 
         public int ThemeId { get; set; }
-        public Theme Theme { get; set; }
+        public Theme Theme { get; set; } = null!;
     }
 }

@@ -60,9 +60,9 @@ namespace WebAPI.Controllers
             try
             {
                 var heritage = await _context.Heritage
-                    .Include(h => h.NationalMinority) // Dohvati povezanu nacionalnu manjinu
-                    .Include(h => h.HeritageTheme) // Dohvati bridge entitet HeritageTheme
-                        .ThenInclude(ht => ht.Theme) // Dohvati povezane teme
+                    .Include(h => h.NationalMinority) // povuci povezanu nacionalnu manjinu
+                    .Include(h => h.HeritageTheme) // povuci bridge entitet HeritageTheme
+                        .ThenInclude(ht => ht.Theme) // povuci povezane teme
                     .FirstOrDefaultAsync(h => h.Id == id);
 
                 if (heritage == null)
@@ -78,7 +78,7 @@ namespace WebAPI.Controllers
                     Location = heritage.Location,
                     Year = heritage.Year,
                     NationalMinorityId = heritage.NationalMinority.Id,
-                    Themes = heritage.HeritageTheme.Select(ht => ht.Theme.Name) // Mapira nazive tema
+                    Themes = heritage.HeritageTheme.Select(ht => ht.Theme.Name) // mapira nazive tema
                 };
 
                 return Ok(heritageDto);
@@ -98,7 +98,7 @@ namespace WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Provjera postoji li NationalMinority s navedenim ID-jem
+            // provjer jel postoji NationalMinority s navedenim ID-jem
             var nationalMinorityExists = await _context.NationalMinority
                 .AnyAsync(nm => nm.Id == heritageDto.NationalMinorityId);
 
@@ -107,16 +107,16 @@ namespace WebAPI.Controllers
                 return BadRequest(new { Message = "Invalid NationalMinorityId. The specified National Minority does not exist." });
             }
 
-            // Početak transakcije
+            // pocni transakciju
             using var transaction = await _context.Database.BeginTransactionAsync();
 
             try
             {
-                // Kreiraj novi entitet Heritage
+                // novi entitet Heritage
                 var heritage = new Heritage
                 {
                     Name = heritageDto.Name,
-                    Description = heritageDto.Description,
+                    Description = heritageDto.Description??"",
                     Location = heritageDto.Location,
                     Year = heritageDto.Year,
                     NationalMinorityId = heritageDto.NationalMinorityId
@@ -125,10 +125,10 @@ namespace WebAPI.Controllers
                 _context.Heritage.Add(heritage);
                 await _context.SaveChangesAsync();
 
-                // Dodaj ili kreiraj teme
-                foreach (var themeName in heritageDto.Themes.Distinct()) // Ukloni duplikate
+                // dodaj ili kreiraj teme
+                foreach (var themeName in heritageDto.Themes.Distinct()) // ukloni duplikate
                 {
-                    // Dohvati temu iz baze ili je kreiraj
+                    // povuci temu iz baze ili je kreiraj
                     var theme = await _context.Theme.FirstOrDefaultAsync(t => t.Name == themeName);
                     if (theme == null)
                     {
@@ -137,7 +137,7 @@ namespace WebAPI.Controllers
                         await _context.SaveChangesAsync();
                     }
 
-                    // Poveži temu s Heritage
+                    // povezi temu s Heritage
                     var heritageTheme = new HeritageTheme
                     {
                         HeritageId = heritage.Id,
@@ -147,18 +147,18 @@ namespace WebAPI.Controllers
                     _context.HeritageTheme.Add(heritageTheme);
                 }
 
-                // Sačuvaj sve promene
+                // save sve promene
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                // Priprema HeritageDto za odgovor
+                // pripremi HeritageDto za odgovor
                 var heritageDtoResponse = new HeritageDto
                 {
                     Name = heritage.Name,
                     Description = heritage.Description,
                     Location = heritage.Location,
                     Year = heritage.Year,
-                    NationalMinorityId = heritage.NationalMinorityId, // Direktno koristimo ID iz heritage
+                    NationalMinorityId = heritage.NationalMinorityId, // direktno ID iz heritage
                     Themes = heritage.HeritageTheme.Select(ht => ht.Theme.Name)
                 };
 
@@ -182,7 +182,7 @@ namespace WebAPI.Controllers
 
             try
             {
-                // Pronađi postojeći entitet Heritage
+                // pronadi entitet Heritage ako vec postoji
                 var heritage = await _context.Heritage
                     .Include(h => h.HeritageTheme)
                     .ThenInclude(ht => ht.Theme)
@@ -193,20 +193,20 @@ namespace WebAPI.Controllers
                     return NotFound(new { Message = "Heritage not found." });
                 }
 
-                // Ažuriraj osnovne atribute
+                // update atribute
                 heritage.Name = heritageDto.Name;
-                heritage.Description = heritageDto.Description;
+                heritage.Description = heritageDto.Description??"";
                 heritage.Location = heritageDto.Location;
                 heritage.Year = heritageDto.Year;
                 heritage.NationalMinorityId = heritageDto.NationalMinorityId;
 
-                // Obradi povezane teme
+                // obradi teme
                 if (heritageDto.Themes != null)
                 {
-                    // Postojeće teme
+                    // postojece teme
                     var existingThemes = heritage.HeritageTheme.Select(ht => ht.Theme.Name).ToList();
 
-                    // Dodaj nove teme
+                    // nove teme
                     foreach (var themeName in heritageDto.Themes.Except(existingThemes))
                     {
                         var theme = await _context.Theme.FirstOrDefaultAsync(t => t.Name == themeName);
@@ -217,7 +217,7 @@ namespace WebAPI.Controllers
                             await _context.SaveChangesAsync();
                         }
 
-                        // Dodaj novu vezu između Heritage i Theme
+                        // dodaj novu vezu između Heritage i Theme
                         heritage.HeritageTheme.Add(new HeritageTheme
                         {
                             HeritageId = heritage.Id,
@@ -225,7 +225,7 @@ namespace WebAPI.Controllers
                         });
                     }
 
-                    // Ukloni nepostojeće teme
+                    // delete nepostojece teme
                     foreach (var themeName in existingThemes.Except(heritageDto.Themes))
                     {
                         var heritageTheme = heritage.HeritageTheme.FirstOrDefault(ht => ht.Theme.Name == themeName);
@@ -236,10 +236,10 @@ namespace WebAPI.Controllers
                     }
                 }
 
-                // Sačuvaj promene
+                // save promjene
                 await _context.SaveChangesAsync();
 
-                // Loguj akciju
+                // log action
                 LogAction($"Updated heritage with ID = {heritage.Id}");
 
                 return NoContent();
@@ -275,13 +275,13 @@ namespace WebAPI.Controllers
 
             try
             {
-                // Proveri stanje entiteta
+                
               
 
-                // Obriši heritage
+                // delete heritage
                 _context.Heritage.Remove(heritage);
 
-                // Sačuvaj promene
+                // save
                 await _context.SaveChangesAsync();
                 return NoContent();
             }

@@ -16,7 +16,7 @@ namespace CulturalHeritageMVC.Models
         public int NationalMinorityId { get; set; }
         public List<NationalMinority> NationalMinorities { get; set; } = new List<NationalMinority>();
 
-        // Nova kolekcija za komentare
+        // nova kolekcija za komentare
         public List<UserHeritageCommentViewModel> Comments { get; set; } = new List<UserHeritageCommentViewModel>();
     }
 }

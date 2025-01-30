@@ -26,11 +26,11 @@ namespace CulturalHeritageMVC.Controllers
         [HttpGet]
         public async Task<IActionResult> List(string search = "", int? nationalMinorityId = null, int page = 1, int pageSize = 10)
         {
-            // Upit za Heritage entitete, uključujući NationalMinority, UserHeritageComment i User
+            // Upit za Heritage entitete, ukljuci NationalMinority, UserHeritageComment i User
             var query = _context.Heritage
                 .Include(h => h.NationalMinority)
                 .Include(h => h.UserHeritageComment)
-                    .ThenInclude(uhc => uhc.User) // Učitaj i korisnike koji su ostavili komentare
+                    .ThenInclude(uhc => uhc.User) // povuci i korisnike koji su ostavili komentare
                 .AsQueryable();
 
             // Kombinacija pretrage i filtera
@@ -47,7 +47,7 @@ namespace CulturalHeritageMVC.Controllers
             // Ukupan broj zapisa za paging
             var totalCount = await query.CountAsync();
 
-            // Paging i dohvaćanje podataka
+            // Paging i dohvacanje podataka
             var heritages = await query
                 .OrderBy(h => h.Name)
                 .Skip((page - 1) * pageSize)
@@ -121,7 +121,7 @@ namespace CulturalHeritageMVC.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // Ponovno popunite popis nacionalnih manjina
+                // Ponovno popuni popis nacionalnih manjina
                 model.NationalMinorities = await _context.NationalMinority
                     .Select(nm => new SelectListItem
                     {
@@ -136,9 +136,9 @@ namespace CulturalHeritageMVC.Controllers
             // Provjera za jedinstvenost imena
             if (await _context.Heritage.AnyAsync(h => h.Name == model.Name))
             {
-                ModelState.AddModelError("Name", "A heritage with this name already exists."); // Dodavanje greške
+                ModelState.AddModelError("Name", "A heritage with this name already exists."); // dodavanje errora
 
-                // Ponovno popunite popis nacionalnih manjina
+                // ponovno popuni popis nacionalnih manjina
                 model.NationalMinorities = await _context.NationalMinority
                     .Select(nm => new SelectListItem
                     {
@@ -147,14 +147,14 @@ namespace CulturalHeritageMVC.Controllers
                     })
                     .ToListAsync();
 
-                return View(model); // Vracanje pogreske korisniku
+                return View(model); // vrati pogreske korisniku
             }
 
             // Ako nema gresaka, stvori novi Heritage objekt
             var heritage = new Heritage
             {
                 Name = model.Name,
-                Description = model.Description,
+                Description = model.Description??"",
                 Location = model.Location,
                 Year = model.Year,
                 NationalMinorityId = model.NationalMinorityId
@@ -172,7 +172,7 @@ namespace CulturalHeritageMVC.Controllers
         {
             var heritage = _context.Heritage
                 .Include(h => h.UserHeritageComment)
-                    .ThenInclude(uhc => uhc.User) // Učitaj i korisnika koji je ostavio komentar
+                    .ThenInclude(uhc => uhc.User) // povuci i korisnika koji je ostavio komentar
                 .FirstOrDefault(h => h.Id == id);
 
             if (heritage == null)
@@ -209,7 +209,7 @@ namespace CulturalHeritageMVC.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // Ako validacija ne uspije, ponovno popuni listu nacionalnih manjina
+                // ako validacija ne uspije, ponovno popuni listu nacionalnih manjina
                 model.NationalMinorities = _context.NationalMinority.ToList();
                 return View(model);
             }
@@ -220,7 +220,7 @@ namespace CulturalHeritageMVC.Controllers
                 return NotFound();
             }
 
-            // Ažuriranje Heritage entiteta
+            // update Heritage entiteta
             heritage.Name = model.Name;
             heritage.Description = model.Description;
             heritage.Location = model.Location;
@@ -254,8 +254,8 @@ namespace CulturalHeritageMVC.Controllers
                 return Unauthorized();
             }
 
-            // Dummy provjera - samo jedan hardkodirani user (ako nema User tabele)
-            var user = new { Id = userId, Username = "admin" }; // Ako ima User tabela, koristi `_context.Users.FirstOrDefault(u => u.Id == userId)`
+            // Dummy provjera - samo jedan hardkodirani user (ako nema User tablice)
+            var user = new { Id = userId, Username = "admin" }; // Ako ima User tablica, koristi `_context.Users.FirstOrDefault(u => u.Id == userId)`
 
             if (user == null)
             {

@@ -14,7 +14,7 @@ public class UserController : Controller
     [HttpGet]
     public IActionResult UpdateUser()
     {
-        // Pretpostavljamo da je admin korisnik jedini korisnik
+        // pretpostavi da je admin korisnik jedini korisnik
         var admin = _context.User.FirstOrDefault(u => u.Username == "admin");
 
         if (admin == null || string.IsNullOrEmpty(admin.Username))
@@ -29,7 +29,7 @@ public class UserController : Controller
             Email = admin.Email,
             FirstName = admin.FirstName,
             LastName = admin.LastName,
-            PhoneNumber = admin.PhoneNumber
+            PhoneNumber = admin.PhoneNumber??""
         };
 
         return View(model);
@@ -43,7 +43,7 @@ public class UserController : Controller
             return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
         }
 
-        // Pretpostavljamo da je admin korisnik jedini korisnik
+        // pretpostavi da je admin korisnik jedini korisnik
         var admin = _context.User.FirstOrDefault(u => u.Username == "admin");
 
         if (admin == null) return Json(new { success = false, message = "User not found." });

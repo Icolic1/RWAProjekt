@@ -68,7 +68,7 @@ public class HeritageThemeController : Controller
             return View(model);
         }
 
-        // Provjera da li kombinacija vec postoji
+        // provjer jel kombinacija vec postoji
         if (_context.HeritageTheme.Any(ht => ht.HeritageId == model.HeritageId && ht.ThemeId == model.ThemeId))
         {
             ModelState.AddModelError(string.Empty, "This Heritage-Theme combination already exists.");
@@ -146,13 +146,13 @@ public class HeritageThemeController : Controller
             return View(model);
         }
 
-        // Dohvati HeritageTheme pomocu originalnog slozenog ključa
+        // Dohvati HeritageTheme pomocu originalnog composite keya
         var heritageTheme = _context.HeritageTheme
             .FirstOrDefault(ht => ht.HeritageId == originalHeritageId && ht.ThemeId == originalThemeId);
 
         if (heritageTheme == null) return NotFound();
 
-        // Ažuriraj slozeni kljuc
+        // update composite key
         heritageTheme.HeritageId = model.HeritageId;
         heritageTheme.ThemeId = model.ThemeId;
 

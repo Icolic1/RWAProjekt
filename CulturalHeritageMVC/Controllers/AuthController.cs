@@ -51,7 +51,7 @@ namespace CulturalHeritageMVC.Controllers
 
             await HttpContext.SignInAsync("CookieAuth", principal);
 
-            return RedirectToAction("List", "Heritage"); // Preusmjeri na listu ako uspe prijava
+            return RedirectToAction("List", "Heritage"); // Preusmjeri na listu ako uspije prijava
         }
 
 

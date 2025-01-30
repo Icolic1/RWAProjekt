@@ -6,19 +6,19 @@ namespace WebAPI.Models
     {
         public int Id { get; set; }
         [Required]
-        public string Username { get; set; }
-        
-        public string PasswordHash { get; set; } // ili Password ako koristite običan string
+        public string Username { get; set; } = null!;
+
+        public string PasswordHash { get; set; } = null!; // ili pw
         [Required]
-        public string FirstName { get; set; }
+        public string FirstName { get; set; } = null!;
         [Required]
-        public string LastName { get; set; }
+        public string LastName { get; set; } = null!;
         public string? PhoneNumber { get; set; }
         [Required]
-        public string Email { get; set; }
-        public string Role { get; set; } // e.g., "Admin" or "User"
+        public string Email { get; set; } = null!;
+        public string Role { get; set; } = null!; // e.g., "Admin" or "User"
 
-        // Navigation properties
-        public ICollection<UserHeritageComment> UserHeritageComments { get; set; }
+        // navigacijska svojstva foreign key
+        public ICollection<UserHeritageComment> UserHeritageComments { get; set; }= new List<UserHeritageComment>();
     }
 }

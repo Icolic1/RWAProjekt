@@ -7,8 +7,8 @@ namespace CulturalHeritageMVC.ViewModels
     public class HeritageAddViewModel
     {
         public string Name { get; set; }=null!;
-        public string Description { get; set; }
-        public string Location { get; set; }
+        public string? Description { get; set; }
+        public string Location { get; set; } = null!;
         public int Year { get; set; }
         [Required]
         public int NationalMinorityId { get; set; }
